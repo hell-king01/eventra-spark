@@ -2,41 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* EVENTRA Design System - Dark Hi-Tech Theme */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark theme base colors */
+    --background: 220 26% 6%;
+    --foreground: 220 10% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 20% 8%;
+    --card-foreground: 220 10% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 20% 8%;
+    --popover-foreground: 220 10% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Neon primary - Electric Blue */
+    --primary: 200 100% 60%;
+    --primary-foreground: 220 26% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Glassmorphism secondary */
+    --secondary: 220 20% 12%;
+    --secondary-foreground: 220 10% 95%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 20% 10%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Neon accent - Purple */
+    --accent: 270 100% 70%;
+    --accent-foreground: 220 26% 6%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 220 10% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 20% 15%;
+    --input: 220 20% 12%;
+    --ring: 200 100% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom EVENTRA colors */
+    --neon-blue: 200 100% 60%;
+    --neon-purple: 270 100% 70%;
+    --neon-pink: 330 100% 70%;
+    --neon-cyan: 180 100% 60%;
+    
+    /* Glassmorphism */
+    --glass-bg: 220 20% 8% / 0.7;
+    --glass-border: 220 30% 25% / 0.3;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(200 100% 60%), hsl(270 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(270 100% 70%), hsl(330 100% 70%));
+    --gradient-bg: radial-gradient(circle at 20% 80%, hsl(200 100% 60% / 0.1) 0%, transparent 50%), 
+                   radial-gradient(circle at 80% 20%, hsl(270 100% 70% / 0.1) 0%, transparent 50%),
+                   radial-gradient(circle at 40% 40%, hsl(330 100% 70% / 0.05) 0%, transparent 50%);
+    
+    /* Shadows and glows */
+    --shadow-neon: 0 0 20px hsl(var(--neon-blue) / 0.5);
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.37);
+    --glow-primary: 0 0 30px hsl(var(--neon-blue) / 0.6);
+    --glow-accent: 0 0 30px hsl(var(--neon-purple) / 0.6);
 
     --sidebar-background: 0 0% 98%;
 
@@ -55,43 +80,7 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+  /* Dark mode is default, no .dark class needed */
 }
 
 @layer base {
@@ -100,6 +89,98 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image: var(--gradient-bg);
+    background-attachment: fixed;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card */
+  .glass-card {
+    @apply backdrop-blur-md bg-white/5 border border-white/10 rounded-xl;
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Neon glow effect */
+  .neon-glow {
+    box-shadow: var(--glow-primary);
+  }
+
+  .neon-glow-accent {
+    box-shadow: var(--glow-accent);
+  }
+
+  /* Animated gradient text */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Hero button variants */
+  .hero-button {
+    @apply relative overflow-hidden px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300;
+    background: var(--gradient-primary);
+    box-shadow: var(--glow-primary);
+  }
+
+  .hero-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-primary), 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-button-secondary {
+    @apply relative overflow-hidden px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Particle animation keyframes */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: var(--glow-primary);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(var(--neon-blue) / 0.8);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
