@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { CheckCircle, Sparkles, User, Mail, Calendar, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { createVerificationEmailTemplate, sendEmail } from "@/utils/emailService";
 
 interface RegistrationFormProps {
   isSubmitted: boolean;
@@ -50,18 +51,28 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
   };
 
   const sendVerificationEmail = async (email: string, token: string, eventName: string) => {
-    // In a real application, this would call your email service
-    // For demo purposes, we'll simulate the email sending
-    console.log(`Verification email would be sent to: ${email}`);
-    console.log(`Verification link: ${window.location.origin}/verify?token=${token}`);
-    console.log(`Event: ${eventName}`);
-    
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo, show the verification link in console and toast
-    toast.success(`Verification email sent! Check console for demo link.`);
-    console.log(`🔗 Demo verification link: ${window.location.origin}/verify?token=${token}`);
+    try {
+      const emailTemplate = createVerificationEmailTemplate(
+        formData.name,
+        eventName,
+        category ? category.charAt(0).toUpperCase() + category.slice(1).toLowerCase() : "Workshop",
+        token
+      );
+
+      const emailSent = await sendEmail(emailTemplate);
+      
+      if (emailSent) {
+        toast.success(`Verification email sent to ${email}!`);
+        console.log(`🔗 Demo verification link: ${window.location.origin}/verify?token=${token}`);
+      } else {
+        toast.error("Failed to send verification email. Please try again.");
+        throw new Error("Email sending failed");
+      }
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      toast.error("Failed to send verification email. Please try again.");
+      throw error;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

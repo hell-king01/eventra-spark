@@ -4,6 +4,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, Home, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { createWelcomeEmailTemplate, sendEmail } from "@/utils/emailService";
 
 const EmailVerification = () => {
   const [searchParams] = useSearchParams();
@@ -102,6 +103,21 @@ const EmailVerification = () => {
       setParticipantData(pendingRegistration);
       setVerificationState('success');
       toast.success('Email verified! Registration completed successfully.');
+      
+      // Send welcome email
+      try {
+        const welcomeEmailTemplate = createWelcomeEmailTemplate(
+          pendingRegistration.name,
+          pendingRegistration.event_name,
+          pendingRegistration.event_category
+        );
+        
+        await sendEmail(welcomeEmailTemplate);
+        console.log('Welcome email sent successfully');
+      } catch (error) {
+        console.error('Failed to send welcome email:', error);
+        // Don't fail the verification process if welcome email fails
+      }
       
       // Confetti effect
       createConfetti();

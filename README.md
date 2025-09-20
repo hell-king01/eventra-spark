@@ -59,6 +59,8 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Database & Edge Functions)
+- Email Verification System
 
 ## How can I deploy this project?
 
@@ -71,3 +73,42 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Email Verification System
+
+This project includes a complete email verification system for event registrations:
+
+### Features
+- **Two-step registration process**: Users register → receive verification email → click link to confirm
+- **Secure token-based verification**: Each registration gets a unique, time-limited token
+- **Beautiful email templates**: Professional HTML emails with event details
+- **Welcome emails**: Automatic confirmation emails after successful verification
+- **24-hour token expiration**: Security feature to prevent stale registrations
+
+### How it works
+1. User fills out registration form
+2. Data is stored in `pending_registrations` table with verification token
+3. Verification email is sent with secure link
+4. User clicks verification link
+5. System verifies token and moves data to `participants` table
+6. Welcome email is sent confirming registration
+7. Expired tokens are automatically cleaned up
+
+### Email Service Integration
+The system is designed to work with any email service provider. Currently set up for:
+- Supabase Edge Functions for email sending
+- Easy integration with services like Resend, SendGrid, Mailgun, etc.
+- Beautiful responsive HTML email templates
+- Fallback console logging for development
+
+### Database Tables
+- `pending_registrations`: Temporary storage for unverified registrations
+- `participants`: Final storage for confirmed registrations
+- Automatic cleanup of expired verification tokens
+
+### Security Features
+- Row Level Security (RLS) enabled
+- Unique verification tokens
+- Time-limited verification links (24 hours)
+- Duplicate registration prevention
+- Secure token generation using crypto.randomUUID()
