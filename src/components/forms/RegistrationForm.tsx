@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { CheckCircle, Sparkles, User, Mail, Calendar } from "lucide-react";
+import { CheckCircle, Sparkles, User, Mail, Calendar, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -22,6 +22,7 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
   
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
@@ -44,6 +45,25 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
     return Object.keys(newErrors).length === 0;
   };
 
+  const generateVerificationToken = () => {
+    return crypto.randomUUID();
+  };
+
+  const sendVerificationEmail = async (email: string, token: string, eventName: string) => {
+    // In a real application, this would call your email service
+    // For demo purposes, we'll simulate the email sending
+    console.log(`Verification email would be sent to: ${email}`);
+    console.log(`Verification link: ${window.location.origin}/verify?token=${token}`);
+    console.log(`Event: ${eventName}`);
+    
+    // Simulate email sending delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // For demo, show the verification link in console and toast
+    toast.success(`Verification email sent! Check console for demo link.`);
+    console.log(`🔗 Demo verification link: ${window.location.origin}/verify?token=${token}`);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -62,41 +82,34 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
     setIsLoading(true);
 
     try {
-      // Insert into Supabase
+      // Generate verification token
+      const verificationToken = generateVerificationToken();
+      
+      // Insert into pending_registrations table instead of participants
       const { error } = await supabase
-        .from("participants")
+        .from("pending_registrations")
         .insert([
           {
             name: formData.name.trim(),
             email: formData.email.trim().toLowerCase(),
             event_name: formData.event.trim(),
-            event_category: category ? category.charAt(0).toUpperCase() + category.slice(1).toLowerCase() : "Workshop", // Capitalize first letter
+            event_category: category ? category.charAt(0).toUpperCase() + category.slice(1).toLowerCase() : "Workshop",
+            verification_token: verificationToken,
           }
         ]);
 
       if (error) {
-        if (error.code === "23505") { // Unique constraint violation
-          toast.error("You're already registered for this event!");
-        } else {
-          console.error("Registration error:", error);
-          toast.error("Registration failed. Please try again.");
-        }
+        console.error("Registration error:", error);
+        toast.error("Registration failed. Please try again.");
         return;
       }
 
-      // Success
+      // Send verification email
+      await sendVerificationEmail(formData.email, verificationToken, formData.event);
+      
+      // Show email sent state
       setIsLoading(false);
-      setIsSubmitted(true);
-      toast.success("Registration successful! Welcome aboard!");
-      
-      // Confetti effect
-      createConfetti();
-      
-      // Reset form after success animation
-      setTimeout(() => {
-        setFormData({ name: "", email: "", event: "" });
-        setIsSubmitted(false);
-      }, 5000);
+      setEmailSent(true);
 
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -127,7 +140,7 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
   return (
     <div className="max-w-md mx-auto">
       <AnimatePresence mode="wait">
-        {!isSubmitted ? (
+        {!emailSent && !isSubmitted ? (
           <motion.div
             key="form"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -239,6 +252,66 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
                 )}
               </motion.button>
             </form>
+          </motion.div>
+        ) : emailSent && !isSubmitted ? (
+          <motion.div
+            key="email-sent"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="glass-card p-8 text-center"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="w-20 h-20 bg-gradient-to-r from-neon-blue to-neon-purple rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <Send className="w-10 h-10 text-background" />
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-2xl font-bold mb-4 gradient-text"
+            >
+              Check Your Email! 📧
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="text-muted-foreground mb-6"
+            >
+              We've sent a verification link to <strong>{formData.email}</strong>. 
+              Click the link in your email to complete your registration.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="space-y-3 text-sm text-muted-foreground"
+            >
+              <p>• Check your spam folder if you don't see the email</p>
+              <p>• The verification link expires in 24 hours</p>
+              <p>• You can close this page safely</p>
+            </motion.div>
+
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0 }}
+              onClick={() => {
+                setEmailSent(false);
+                setFormData({ name: "", email: "", event: "" });
+              }}
+              className="mt-6 px-6 py-2 text-sm border border-border rounded-lg hover:bg-secondary/50 transition-colors"
+            >
+              Register Another Event
+            </motion.button>
           </motion.div>
         ) : (
           <motion.div
