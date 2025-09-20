@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { CheckCircle, Sparkles, User, Mail, Calendar } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface RegistrationFormProps {
   isSubmitted: boolean;
@@ -58,15 +60,49 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
     }
     
     setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsLoading(false);
-    setIsSubmitted(true);
-    
-    // Confetti effect
-    createConfetti();
+
+    try {
+      // Insert into Supabase
+      const { error } = await supabase
+        .from("participants")
+        .insert([
+          {
+            name: formData.name.trim(),
+            email: formData.email.trim().toLowerCase(),
+            event_name: formData.event.trim(),
+            event_category: category || "Workshop", // Default category
+          }
+        ]);
+
+      if (error) {
+        if (error.code === "23505") { // Unique constraint violation
+          toast.error("You're already registered for this event!");
+        } else {
+          console.error("Registration error:", error);
+          toast.error("Registration failed. Please try again.");
+        }
+        return;
+      }
+
+      // Success
+      setIsLoading(false);
+      setIsSubmitted(true);
+      toast.success("Registration successful! Welcome aboard!");
+      
+      // Confetti effect
+      createConfetti();
+      
+      // Reset form after success animation
+      setTimeout(() => {
+        setFormData({ name: "", email: "", event: "" });
+        setIsSubmitted(false);
+      }, 5000);
+
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const createConfetti = () => {
