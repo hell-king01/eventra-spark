@@ -8,9 +8,6 @@ import Workshop from "./pages/Workshop";
 import Hackathon from "./pages/Hackathon";
 import Webinar from "./pages/Webinar";
 import Registration from "./pages/Registration";
-import AdminLogin from "./pages/AdminLogin";
-import AdminParticipants from "./pages/AdminParticipants";
-import EmailVerification from "./pages/EmailVerification";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,9 +24,6 @@ const App = () => (
           <Route path="/hackathon" element={<Hackathon />} />
           <Route path="/webinar" element={<Webinar />} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/participants" element={<AdminParticipants />} />
-          <Route path="/verify" element={<EmailVerification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

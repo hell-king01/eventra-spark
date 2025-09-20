@@ -78,11 +78,6 @@ export const Footer = () => {
                   Privacy
                 </a>
               </li>
-              <li>
-                <Link to="/admin/login" className="text-muted-foreground hover:text-neon-blue transition-colors">
-                  Admin
-                </Link>
-              </li>
             </ul>
           </motion.div>
 
