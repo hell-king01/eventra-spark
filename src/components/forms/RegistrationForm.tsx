@@ -70,7 +70,7 @@ export const RegistrationForm = ({ isSubmitted, setIsSubmitted }: RegistrationFo
             name: formData.name.trim(),
             email: formData.email.trim().toLowerCase(),
             event_name: formData.event.trim(),
-            event_category: category || "Workshop", // Default category
+            event_category: category ? category.charAt(0).toUpperCase() + category.slice(1).toLowerCase() : "Workshop", // Capitalize first letter
           }
         ]);
 
